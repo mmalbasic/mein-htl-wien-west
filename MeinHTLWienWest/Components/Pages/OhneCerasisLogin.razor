@@ -154,7 +154,7 @@
             await Task.Run(async() =>
             {
                 var conn = Helper.GetConnection();
-                Helper.IsNewUser = await conn.ExecuteScalarAsync<bool>("SELECT CAST(CASE WHEN EXISTS (SELECT 1 FROM client WHERE email = @Email) THEN 0 ELSE 1 END as BOOLEAN)", new { Email = email });
+                Helper.IsNewUser = await conn.ExecuteScalarAsync<bool>(Helper.SQLQueries["is_new_user"].Statement, new { Email = email });
             });
             Helper.CurrentEmail = email;
 

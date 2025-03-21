@@ -20,5 +20,10 @@ namespace MeinHTLWienWest.Services
 
         public static List<string> UserPermissions { get; set; }
         public static Dictionary<string, SQLQuery> SQLQueries { get; set; }
+
+
+        //Cerasis
+
+        public static string CerasisCardId { get; set; }
     }
 }

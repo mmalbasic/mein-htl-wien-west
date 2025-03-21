@@ -1,6 +1,7 @@
 ﻿@page "/otp-login"
 @inject NavigationManager navManager
 @using MailKit.Net.Smtp
+@using MeinHTLWienWest.Services.Authentication
 @using MimeKit
 @using Org.BouncyCastle.Security
 
@@ -155,8 +156,7 @@
         {
             SecureRandom random = new SecureRandom();
             correctOtpCode = random.Next(0, 1000000).ToString().PadLeft(6, '0');
-            //Helper.IsSent = await SendOTPCodeAsync(correctOtpCode, Helper.CurrentEmail);
-            Helper.IsSent = true;
+            Helper.IsSent = AuthManager.SendOTPCode(correctOtpCode, Helper.CurrentEmail);
         }
     }
 
@@ -173,13 +173,13 @@
 
             if (Helper.IsNewUser)
             {
-                await Register();
+               status = await AuthManager.Register(selectedDropdown);
             }
             else
             {
                 //login
                 var conn = Helper.GetConnection();
-                await conn.ExecuteAsync("UPDATE client SET last_login = @LastLogin WHERE email = @Email", new {LastLogin = DateTime.Now, Email = Helper.CurrentEmail});
+                await conn.ExecuteAsync(Helper.SQLQueries["refresh_last_login"].Statement, new {LastLogin = DateTime.Now, Email = Helper.CurrentEmail});
             }
         }
         else
@@ -187,91 +187,11 @@
             status = "Der eingegebene Code ist falsch";
         }
 
-        await LoadUserDetails();
+        await AuthManager.LoadUserDetails();
 
 
     }
 
-    private bool SendOTPCode(string otpCode, string email)
-    {
-        try
-        {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Cerasis", "malbasicmarcel@cerasis.eu"));
-            message.To.Add(new MailboxAddress("", email));
-            message.Subject = "Cerasis Passwortzurücksetzung";
-            message.Body = new TextPart("plain")
-                {
-                    Text = $"Vielen Dank für die Benutzung von Mein HTL Wien West! \n" +
-                        $"Der Code für die Authentifizierung lautet:\n\n{otpCode}"
-                };
-
-            _ = Task.Run(async () =>
-            {
-                using (var client = new SmtpClient())
-                {
-                    client.Connect("mainsrv.cerasis.eu", 587, false);
-                    client.Authenticate("malbasicmarcel@cerasis.eu", "!.S0m3th1ng?33");
-                    client.Send(message);
-                    client.Disconnect(true);
-                }
-            });
-
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
-
-    private async Task Register()
-    {
-        var dbObject = new { Email = Helper.CurrentEmail, LastLogin = DateTime.Now };
-        //register
-        var conn = Helper.GetConnection();
-        await conn.ExecuteAsync("INSERT INTO client VALUES (DEFAULT, @Email, @LastLogin)", dbObject);
-        Helper.CurrentUserId = (await conn.QueryAsync<int>(Helper.SQLQueries["get_user_id"].Statement, new { Email = Helper.CurrentEmail })).FirstOrDefault();
-
-        //set privileges according to dropdown select
-
-        List<int> privileges = new List<int>();
-
-        switch (selectedDropdown)
-        {
-            case "Schüler":
-                privileges = new List<int>() { 2, 3, 4 };
-                break;
-            case "Lehrer":
-                privileges = new List<int>() { 1, 2, 3, 4 };
-                break;
-            default:
-                status = "Bitte Ihre Position eintragen";
-                break;
-
-
-        }
-
-        for (int i = 0; i < privileges.Count; i++)
-        {
-            await conn.ExecuteAsync("INSERT INTO client_privilege VALUES (@UserId, @PrivilegeId)", new { UserId = Helper.CurrentUserId, PrivilegeId = privileges[i] });
-        }
-
-
-    }
-
-    private async Task LoadUserDetails()
-    {
-        var conn = Helper.GetConnection();
-        if (Helper.CurrentUserId == 0)
-        {
-            Helper.CurrentUserId = (await conn.QueryAsync<int>(Helper.SQLQueries["get_user_id"].Statement, new { Email = Helper.CurrentEmail })).FirstOrDefault();
-        }
-       
-        Helper.UserPermissions = (await conn.QueryAsync<string>(Helper.SQLQueries["get_user_permissions"].Statement, new { UserId = Helper.CurrentUserId })).ToList();
-
-      
-    }
+  
 
 }
