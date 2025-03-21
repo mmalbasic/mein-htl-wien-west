@@ -1,0 +1,135 @@
+﻿@page "/OhneCerasis-login"
+@inject NavigationManager navManager
+
+<PageTitle>Login ohne Cerasis</PageTitle>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">  	
+        <div class="login">
+            <form>
+                <label><span>Login ohne Cerasis</span></label>
+                <input type="email" name="email" placeholder="Email" required="">
+              <button class="login-button" @onclick="@(() => navManager.NavigateTo("/otp-login"))">Login</button>
+
+
+
+            </form>
+        </div>
+        <button class="back-button" @onclick="GoBack">Zurück</button>
+    </div>
+</body>
+</html>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'Jost', sans-serif;
+        background: linear-gradient(to bottom, #000000, #1a1a1a, #333333);
+    }
+
+    .main {
+        width: 350px;
+        height: 400px;
+        overflow: hidden;
+        background: rgba(50, 50, 50, 0.7);
+        border-radius: 10px;
+        box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .login {
+        width: 100%;
+    }
+
+    label {
+        color: #fff;
+        font-size: 2em;
+        justify-content: center;
+        display: flex;
+        margin-bottom: 20px;
+        font-weight: bold;
+        white-space: nowrap; 
+    }
+
+    input {
+        width: 80%;
+        height: 35px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        justify-content: center;
+        display: flex;
+        margin: 10px auto;
+        padding: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        outline: none;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 1em;
+    }
+
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    button {
+        width: 80%;
+        height: 40px;
+        margin: 10px auto;
+        justify-content: center;
+        display: block;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        font-size: 1em;
+        font-weight: bold;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        transition: .2s ease-in;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: rgba(0, 110, 255, 0.8);
+        box-shadow: 0px 0px 10px rgba(0, 140, 255, 0.8);
+    }
+
+    .back-button {
+        width: 80%;
+        height: 40px;
+        background: rgba(30, 30, 30, 0.8);
+        color: #ccc;
+        font-size: 1em;
+        border-radius: 5px;
+        border: none;
+        margin-top: 10px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .back-button:hover {
+        background: rgba(50, 50, 50, 1);
+        color: white;
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+@code {
+    private void GoBack()
+    {
+        navManager.NavigateTo("/");
+    }
+}
