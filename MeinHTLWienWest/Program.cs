@@ -1,4 +1,5 @@
 using MeinHTLWienWest.Components;
+using MeinHTLWienWest.Services;
 
 namespace MeinHTLWienWest
 {
@@ -8,6 +9,8 @@ namespace MeinHTLWienWest
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            Helper.DBConnString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'DatabaseConnection' not found.");
+            Helper.SQLQueries = builder.Configuration.GetSection("DBQueries").Get<List<SQLQuery>>().ToDictionary(q => q.Name);
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();

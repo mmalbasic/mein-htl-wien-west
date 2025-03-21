@@ -1,5 +1,8 @@
 ﻿@page "/otp-login"
 @inject NavigationManager navManager
+@using MailKit.Net.Smtp
+@using MimeKit
+@using Org.BouncyCastle.Security
 
 <PageTitle>OTP Code</PageTitle>
 
@@ -13,104 +16,262 @@
     <div class="main">
         <h1 class="title">Code eingeben</h1>
 
-        <input type="text" class="otp-input" placeholder="123456" maxlength="6">
+        <input type="text" class="otp-input" placeholder="123456" maxlength="6" @bind-value="@inputOtpCode">
 
-        <button class="login-button confirm">Bestätigen</button>
+        @if (Helper.IsNewUser)
+        {
+            <select class="styled-dropdown" @bind="@selectedDropdown">
+                <option value="Schüler" selected>Schüler</option>
+                <option value="Lehrer">Lehrer</option>
+            </select>
+        }
+
+
+        <button class="login-button confirm" @onclick="Proceed">Bestätigen</button>
         <button class="login-button back" @onclick="GoBack">Zurück</button>
+        <p>@status</p>
     </div>
 </body>
 </html>
 
 <style>
+    p {
+    color: red;
+    }
     body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        font-family: 'Jost', sans-serif;
-        background: linear-gradient(to bottom, #000000, #1a1a1a, #333333);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Jost', sans-serif;
+    background: linear-gradient(to bottom, #000000, #1a1a1a, #333333);
     }
 
     .main {
-        width: 350px;
-        height: 300px;
-        background: rgba(50, 50, 50, 0.7);
-        border-radius: 10px;
-        box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+    width: 350px;
+    height: 350px;
+    background: rgba(50, 50, 50, 0.7);
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     }
 
     .title {
-        color: white;
-        font-size: 1.8em;
-        font-weight: bold;
-        margin-bottom: 15px;
-        text-align: center;
+    color: white;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
     }
 
     .otp-input {
-        width: 60%;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: none;
-        border-radius: 5px;
-        text-align: center;
-        font-size: 1.5em;
-        letter-spacing: 5px;
-        outline: none;
-        margin-bottom: 15px;
+    width: 60%;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.5em;
+    letter-spacing: 5px;
+    outline: none;
+    margin-bottom: 15px;
+    }
+
+    .styled-dropdown {
+    width: 70%;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1em;
+    outline: none;
+    margin-bottom: 15px;
+    cursor: pointer;
+    }
+
+    .styled-dropdown option {
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
     }
 
     .login-button {
-        width: 80%;
-        height: 45px;
-        margin: 10px 0;
-        justify-content: center;
-        display: flex;
-        align-items: center;
-        font-size: 1em;
-        font-weight: bold;
-        outline: none;
-        border: none;
-        border-radius: 5px;
-        transition: .2s ease-in;
-        cursor: pointer;
+    width: 80%;
+    height: 45px;
+    margin: 10px 0;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    font-weight: bold;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    transition: .2s ease-in;
+    cursor: pointer;
     }
 
     .confirm {
-        background: black;
-        color: white;
+    background: black;
+    color: white;
     }
 
     .confirm:hover {
-        background: rgba(30, 30, 30, 1);
-        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    background: rgba(30, 30, 30, 1);
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
     }
 
     .back {
-        background: rgba(30, 30, 30, 0.8);
-        color: #bbb;
+    background: rgba(30, 30, 30, 0.8);
+    color: #bbb;
     }
 
     .back:hover {
-        background: rgba(50, 50, 50, 1);
-        color: white;
-        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    background: rgba(50, 50, 50, 1);
+    color: white;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
     }
-
 </style>
 
+
 @code {
+    private string correctOtpCode = "";
+    private string inputOtpCode = "";
+    private string selectedDropdown = "";
+    private string status = "";
+
+    protected override void OnInitialized()
+    {
+        if (!Helper.IsSent)
+        {
+            SecureRandom random = new SecureRandom();
+            correctOtpCode = random.Next(0, 1000000).ToString().PadLeft(6, '0');
+            //Helper.IsSent = await SendOTPCodeAsync(correctOtpCode, Helper.CurrentEmail);
+            Helper.IsSent = true;
+        }
+    }
+
     private void GoBack()
     {
         navManager.NavigateTo("/OhneCerasis-login");
     }
+
+    private async Task Proceed()
+    {
+
+        if (correctOtpCode == inputOtpCode)
+        {
+
+            if (Helper.IsNewUser)
+            {
+                await Register();
+            }
+            else
+            {
+                //login
+                var conn = Helper.GetConnection();
+                await conn.ExecuteAsync("UPDATE client SET last_login = @LastLogin WHERE email = @Email", new {LastLogin = DateTime.Now, Email = Helper.CurrentEmail});
+            }
+        }
+        else
+        {
+            status = "Der eingegebene Code ist falsch";
+        }
+
+        await LoadUserDetails();
+
+
+    }
+
+    private bool SendOTPCode(string otpCode, string email)
+    {
+        try
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Cerasis", "malbasicmarcel@cerasis.eu"));
+            message.To.Add(new MailboxAddress("", email));
+            message.Subject = "Cerasis Passwortzurücksetzung";
+            message.Body = new TextPart("plain")
+                {
+                    Text = $"Vielen Dank für die Benutzung von Mein HTL Wien West! \n" +
+                        $"Der Code für die Authentifizierung lautet:\n\n{otpCode}"
+                };
+
+            _ = Task.Run(async () =>
+            {
+                using (var client = new SmtpClient())
+                {
+                    client.Connect("mainsrv.cerasis.eu", 587, false);
+                    client.Authenticate("malbasicmarcel@cerasis.eu", "!.S0m3th1ng?33");
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+            });
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+
+    private async Task Register()
+    {
+        var dbObject = new { Email = Helper.CurrentEmail, LastLogin = DateTime.Now };
+        //register
+        var conn = Helper.GetConnection();
+        await conn.ExecuteAsync("INSERT INTO client VALUES (DEFAULT, @Email, @LastLogin)", dbObject);
+        Helper.CurrentUserId = (await conn.QueryAsync<int>(Helper.SQLQueries["get_user_id"].Statement, new { Email = Helper.CurrentEmail })).FirstOrDefault();
+
+        //set privileges according to dropdown select
+
+        List<int> privileges = new List<int>();
+
+        switch (selectedDropdown)
+        {
+            case "Schüler":
+                privileges = new List<int>() { 2, 3, 4 };
+                break;
+            case "Lehrer":
+                privileges = new List<int>() { 1, 2, 3, 4 };
+                break;
+            default:
+                status = "Bitte Ihre Position eintragen";
+                break;
+
+
+        }
+
+        for (int i = 0; i < privileges.Count; i++)
+        {
+            await conn.ExecuteAsync("INSERT INTO client_privilege VALUES (@UserId, @PrivilegeId)", new { UserId = Helper.CurrentUserId, PrivilegeId = privileges[i] });
+        }
+
+
+    }
+
+    private async Task LoadUserDetails()
+    {
+        var conn = Helper.GetConnection();
+        if (Helper.CurrentUserId == 0)
+        {
+            Helper.CurrentUserId = (await conn.QueryAsync<int>(Helper.SQLQueries["get_user_id"].Statement, new { Email = Helper.CurrentEmail })).FirstOrDefault();
+        }
+       
+        Helper.UserPermissions = (await conn.QueryAsync<string>(Helper.SQLQueries["get_user_permissions"].Statement, new { UserId = Helper.CurrentUserId })).ToList();
+
+      
+    }
+
 }
