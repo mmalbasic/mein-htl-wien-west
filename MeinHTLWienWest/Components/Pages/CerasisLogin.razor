@@ -17,7 +17,7 @@
                 <label>Login mit Cerasis</label>
                 <input type="email" name="email" placeholder="Email" required="" @bind-value="@email">
                 <input type="password" name="pswd" placeholder="Passwort" required="" @bind-value="@password">
-                <button>Login</button>
+                <button type="button" @onclick="Proceed">Login</button>
             </form>
         </div>
         <button class="back-button" @onclick="GoBack">Zurück</button>
@@ -138,12 +138,13 @@
 
     private async Task Proceed()
     {
-        //Expected token: Username;AppName;AccountType;PersonalCardId
-        string cerasisToken = await AuthManager.GetCerasisToken();
+
+        //Expected token: Username;AccountType;PersonalCardId
+        string cerasisToken = await AuthManager.GetCerasisToken(email, password);
         string[] userData = cerasisToken.Split(";");
 
-        string accountType = userData[3];
-        Helper.CerasisCardId = userData[4];
+        string accountType = userData[1];
+        Helper.CerasisCardId = userData[2];
 
         await Task.Run(async () =>
         {
@@ -168,6 +169,8 @@
         {
             await AuthManager.LoadUserDetails();
         }
+
+        navManager.NavigateTo("/tickets");
 
     }
 }

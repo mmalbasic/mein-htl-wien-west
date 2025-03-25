@@ -180,6 +180,7 @@
                 status = await AuthManager.Login();
             }
             navManager.NavigateTo("/main", true);
+            return;
         }
         else
         {
@@ -188,7 +189,7 @@
 
         await AuthManager.LoadUserDetails();
 
-
+        navManager.NavigateTo("/tickets");
     }
 
   
