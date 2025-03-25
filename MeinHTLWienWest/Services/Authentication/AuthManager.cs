@@ -2,6 +2,7 @@
 using Dapper;
 using MailKit.Net.Smtp;
 using MimeKit;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -106,11 +107,13 @@ namespace MeinHTLWienWest.Services.Authentication
         }
 
 
-        public static async Task<string> GetCerasisToken()
+        public static async Task<string> GetCerasisToken(string email, string password)
         {
             using (HttpClient client = new HttpClient())
             {
-                using HttpResponseMessage response = await client.GetAsync("https://www.cerasis.eu/");
+                client.DefaultRequestHeaders.Add("Email", email);
+                client.DefaultRequestHeaders.Add("Password", password);
+                using HttpResponseMessage response = await client.GetAsync("https://www.cerasis.eu/api/remote-auth");
                 {
                     try
                     {
@@ -118,7 +121,7 @@ namespace MeinHTLWienWest.Services.Authentication
                         string responseBody = await response.Content.ReadAsStringAsync();
 
                         AES tokenEncryption = new AES();
-                        string receivedToken = tokenEncryption.DecryptString(Encoding.UTF8.GetBytes(responseBody), tokenKey, tokenIv);
+                        string receivedToken = tokenEncryption.DecryptString(Convert.FromBase64String(responseBody), tokenKey, tokenIv);
                         
                         
                         return receivedToken;
