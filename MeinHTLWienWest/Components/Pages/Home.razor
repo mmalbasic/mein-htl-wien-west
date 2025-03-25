@@ -1,7 +1,12 @@
 ﻿@page "/"
 @inject NavigationManager navManager
 
+
 <PageTitle>Home</PageTitle>
+
+<div class="center">
+    <img src="resource/icon.png" width="200px" height="200px"/> 
+</div>
 
 <div class="main">  
     <h1 class="title">Anmelden</h1>
@@ -22,7 +27,7 @@
     body {
         margin: 0;
         padding: 0;
-        display: flex;
+        display: grid;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
@@ -42,6 +47,12 @@
         align-items: center;
         justify-content: center;
         padding: 20px;
+    }
+
+    .center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .title {
