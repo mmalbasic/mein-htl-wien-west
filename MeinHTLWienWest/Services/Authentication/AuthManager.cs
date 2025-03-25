@@ -136,31 +136,32 @@ namespace MeinHTLWienWest.Services.Authentication
             }
         }
 
-        public static async Task GiveCerasis()
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        
+        //public static async Task GiveCerasis()
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var requestBody = new
-                {
-                    Card = Helper.CerasisCardId,
-                    Amount = 30
-                };
+        //        var requestBody = new
+        //        {
+        //            Card = Helper.CerasisCardId,
+        //            Amount = 30
+        //        };
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://www.cerasis.eu/", requestBody);
+        //        HttpResponseMessage response = await client.PostAsJsonAsync("https://www.cerasis.eu/", requestBody);
 
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("Response: " + responseData);
-                }
-                else
-                {
-                    Console.WriteLine($"Error: {response.StatusCode}");
-                }
-            }
-        }
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            string responseData = await response.Content.ReadAsStringAsync();
+        //            Console.WriteLine("Response: " + responseData);
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine($"Error: {response.StatusCode}");
+        //        }
+        //    }
+        //}
     }
 }
