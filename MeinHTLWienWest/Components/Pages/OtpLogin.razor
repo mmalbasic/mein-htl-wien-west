@@ -173,14 +173,13 @@
 
             if (Helper.IsNewUser)
             {
-               status = await AuthManager.Register(selectedDropdown);
+                status = await AuthManager.Register(selectedDropdown);
             }
             else
             {
-                //login
-                var conn = Helper.GetConnection();
-                await conn.ExecuteAsync(Helper.SQLQueries["refresh_last_login"].Statement, new {LastLogin = DateTime.Now, Email = Helper.CurrentEmail});
+                status = await AuthManager.Login();
             }
+            navManager.NavigateTo("/main", true);
         }
         else
         {

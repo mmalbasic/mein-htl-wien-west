@@ -55,6 +55,18 @@ namespace MeinHTLWienWest.Services.Authentication
         }
 
 
+        public static async Task<string> Login()
+        {
+            string status = "";
+            var dbObject = new { Email = Helper.CurrentEmail, LastLogin = DateTime.Now };
+            //register
+            var conn = Helper.GetConnection();
+            await conn.ExecuteAsync(Helper.SQLQueries["refresh_last_login"].Statement, dbObject);
+            Helper.CurrentUserId = (await conn.QueryAsync<int>(Helper.SQLQueries["get_user_id"].Statement, new { Email = Helper.CurrentEmail })).FirstOrDefault();
+
+            return "";
+        }
+
         public static async Task<string> Register(string selectedRole)
         {
             string status = "";
