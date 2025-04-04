@@ -1,23 +1,120 @@
 ﻿@page "/main"
+@inject NavigationManager navManager
 
 <PageTitle>Home</PageTitle>
 
-<div>
-    <div style="display:flex">
-        <h6>Made by Team Cerasis</h6>
-        <h6 style="margin-left: auto;">Last update date : 25/03/2025</h6>
-    </div>
-	<h3 class="content-center">Mein HTL wien west</h3>
-	<h4 class="content-center">Meine Schul webseite</h4>
+<!-- Oberer Bereich mit Datum und Team -->
+<div class="header">
+    <h6>Made by Team Cerasis</h6>
 </div>
 
+<!-- Titel / Überschriften in der Mitte -->
+<div class="content-center">
+    <h3>Mein HTL Wien West</h3>
+</div>
+<div class="content-center">
+    <h4>Meine Schul Webseite</h4>
+</div>
+
+<!-- Hauptbereich mit dem Button "Neue Meldung" -->
+<div class="main-content">
+    <button class="login-button" @onclick='() => navManager.NavigateTo("/neue-meldungen")'>
+        Neue Meldung
+    </button>
+</div>
+
+<!-- Fixierte Navigationsleiste am unteren Rand -->
+<div class="bottom-nav">
+    <button class="nav-button" @onclick='() => navManager.NavigateTo("/main")'>Start</button>
+    <button class="nav-button" @onclick='() => navManager.NavigateTo("/meldungen")'>Meldungen</button>
+    <button class="nav-button" @onclick='() => navManager.NavigateTo("/karte")'>Karte</button>
+    <button class="nav-button" @onclick='() => navManager.NavigateTo("/forum")'>Forum</button>
+</div>
+
+@code {
+    // Keine zusätzliche Logik benötigt.
+}
+
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        font-family: 'Jost', sans-serif;
+        background: linear-gradient(to bottom, #2a0a4a, #3b0e63, #4e148c);
+    }
+
+    .header {
+        display: flex;
+        margin: 10px;
+        color: white;
+    }
+
     .content-center {
         display: flex;
         justify-content: center;
+        margin-top: 10px;
+        color: white;
+    }
+
+    .main-content {
+        background: rgba(50, 50, 50, 0.7);
+        border-radius: 10px;
+        box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        width: 350px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        margin: 20px auto;
+    }
+
+    .login-button {
+        width: 80%;
+        height: 45px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1em;
+        font-weight: bold;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        transition: .2s ease-in;
+        cursor: pointer;
+        background: black;
+        color: white;
+    }
+    .login-button:hover {
+        background: rgba(30, 30, 30, 1);
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: black;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .nav-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 0.9em;
+        cursor: pointer;
+    }
+    .nav-button:hover {
+        color: #bbb;
     }
 </style>
-
-@code {
-
-}

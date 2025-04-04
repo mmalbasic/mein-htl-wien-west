@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navManager
 
 <div class="page">
 
@@ -8,15 +9,27 @@
         </article>
 
         <nav>
-            <div class="nav-item">🏠<br>Start</div>
-            <div class="nav-item">✉️<br>Meldungen</div>
-            <div class="nav-item">❗<br>Karte</div>
-            <div class="nav-item">📄<br>Forum</div>
+            <!-- Klick auf "Start" -> geht zur Main-Seite. 
+                 Der zweite Parameter true sorgt dafür, dass sie neu geladen wird, 
+                 falls du bereits auf /main bist. -->
+            <button class="nav-item" @onclick='() => navManager.NavigateTo("/main", true)'>
+                🏠<br>Start
+            </button>
+
+            <button class="nav-item" @onclick='() => navManager.NavigateTo("/meldungen", true)'>
+                ✉️<br>Meldungen
+            </button>
+
+            <button class="nav-item"  @onclick='() => navManager.NavigateTo("/karte")'>
+                ❗<br>Karte
+            </button>
+
+            <button class="nav-item" >
+                📄<br>Forum
+            </button>
         </nav>
     </main>
 </div>
-
-
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -43,12 +56,12 @@
         align-items: center;
     }
 
-        header a {
-            text-decoration: none;
-            color: black;
-            font-size: 18px;
-            margin-left: 10px;
-        }
+    header a {
+        text-decoration: none;
+        color: black;
+        font-size: 18px;
+        margin-left: 10px;
+    }
 
     .button-container {
         display: flex;
@@ -69,14 +82,20 @@
         width: 100%;
         position: absolute;
         bottom: 0;
+        left: 0;
         display: flex;
         justify-content: space-around;
         padding: 10px 0;
         border-top: 2px solid black;
+        background-color: black; /* Immer schwarzer Hintergrund */
     }
 
     .nav-item {
         text-align: center;
         font-size: 14px;
+        color: white; /* Weißer Text für bessere Lesbarkeit */
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 </style>
