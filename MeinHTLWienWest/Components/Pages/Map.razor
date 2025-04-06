@@ -1,0 +1,117 @@
+﻿@page "/karte"
+
+<PageTitle>Karte / Etagenauswahl</PageTitle>
+
+<!-- Umschließendes Div mit lila Hintergrund -->
+<div class="page-bg d-flex flex-column align-items-center pt-4 pb-4">
+
+    <!-- Überschrift / Beschreibung -->
+    <div class="container-fluid text-center">
+        <h3 class="text-white mb-3">Karte / Etagenauswahl</h3>
+        <p class="text-white mb-4">Wähle ein Stockwerk aus:</p>
+    </div>
+
+    <div class="toggle-container">
+        @if (showFloors)
+        {
+                <div class="floorselection">
+                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Dachgeschoss"))">Dachgeschoss</button>
+                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("3. Stock"))">3. Stock</button>
+                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("2. Stock"))">2. Stock</button>
+                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("1. Stock"))">1. Stock</button>
+                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Erdgeschoss"))">Erdgeschoss</button>
+                    <button class="floorselectionbtn btn btn-dark" @onclick="@(() => SelectFilter("Untergeschoss"))">Untergeschoss</button>
+                </div>
+        }
+        <button class="floorbtn btn btn-dark" @onclick="ShowFloors">@selectedFilter</button>
+    </div>   
+</div>
+
+<style>
+
+  html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #4e148c; 
+  }
+
+  .page-bg {
+      min-height: 100vh;
+      width: 100%;
+      background-color: #4e148c;
+      margin: 0;
+  }
+
+  .toggle-container {
+      position: fixed;
+      bottom: 60px; 
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+  }
+
+  .problem-card {
+      background: rgba(50, 50, 50, 0.7);
+      border: none;
+      border-radius: 10px;
+      box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      width: 90%;
+      max-width: 600px;
+  }
+
+  .floorbtn {
+      width: 100vw;
+      height: 65px;
+      text-align: left;
+      font-size: 24px;
+      margin: 0;
+      padding: 0 10px;
+      margin-left: -5vw;
+  }
+
+  .floorselection {
+      display: flex;
+      flex-direction: column;
+  }
+
+
+  .floorselectionbtn {
+      width: 100vw;
+      height: 50px;
+      text-align: left;
+      font-size: 24px;
+      margin: 0;
+      padding: 0 10px;
+      border-radius: 0;
+      margin-left: -5vw;
+  }
+
+
+  .problem-card .card-title,
+  .problem-card .card-text {
+      color: white;
+  }
+</style>
+
+@code
+{
+    private bool showFloors = false;
+    private void ShowFloors()
+    {
+        showFloors = !showFloors;
+    }
+
+
+    private string selectedFilter = "Erdgeschoss";
+    private void SelectFilter(string filter)
+    {
+        selectedFilter = filter;
+        ShowFloors();
+    }
+}

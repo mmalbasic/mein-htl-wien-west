@@ -1,4 +1,4 @@
-﻿@page "/Cerasis-login"
+﻿@page "/cerasis-login"
 @using MeinHTLWienWest.Components.Layout
 @using MeinHTLWienWest.Services.Authentication
 @inject NavigationManager navManager
@@ -172,7 +172,7 @@
             await AuthManager.LoadUserDetails();
         }
 
-        navManager.NavigateTo("/tickets");
+        navManager.NavigateTo("/main");
 
     }
 }

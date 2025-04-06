@@ -2,6 +2,7 @@
 using Dapper;
 using MailKit.Net.Smtp;
 using MimeKit;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,8 +11,8 @@ namespace MeinHTLWienWest.Services.Authentication
 {
     public static class AuthManager
     {
-        static byte[] tokenKey = new byte[] { 184, 255, 59, 250, 106, 110, 63, 203, 211, 162, 249, 129, 28, 131, 110, 50, 203, 162, 82, 95, 88, 20, 107, 120, 16, 161, 107, 160, 114, 23, 246, 134 };
-        static byte[] tokenIv = new byte[] { 107, 32, 92, 217, 156, 182, 176, 86, 216, 125, 143, 228, 67, 16, 136, 199 };
+        public static byte[] TokenKey { get; } = [ 184, 255, 59, 250, 106, 110, 63, 203, 211, 162, 249, 129, 28, 131, 110, 50, 203, 162, 82, 95, 88, 20, 107, 120, 16, 161, 107, 160, 114, 23, 246, 134 ];
+        public static byte[] TokenIv { get; } = [107, 32, 92, 217, 156, 182, 176, 86, 216, 125, 143, 228, 67, 16, 136, 199 ];
 
         public static bool SendOTPCode(string otpCode, string email)
         {
@@ -133,8 +134,8 @@ namespace MeinHTLWienWest.Services.Authentication
                         string responseBody = await response.Content.ReadAsStringAsync();
 
                         AES tokenEncryption = new AES();
-                        string receivedToken = tokenEncryption.DecryptString(Convert.FromBase64String(responseBody), tokenKey, tokenIv);
-                        
+                        string receivedToken = tokenEncryption.DecryptString(Convert.FromBase64String(responseBody), AuthManager.TokenKey, AuthManager.TokenIv);
+                        Helper.CerasisToken = responseBody;
                         
                         return receivedToken;
                     }

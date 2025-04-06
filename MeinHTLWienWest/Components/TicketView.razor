@@ -1,0 +1,131 @@
+﻿<div class="card problem-card mb-3">
+    <img src="data:image/png;base64,@(Convert.ToBase64String(ExistingTicket.Images.Count > 0
+        ? ExistingTicket.Images[0]
+        : File.ReadAllBytes("wwwroot/resource/missing.png")))"
+    alt="Ticket Image"
+    style="width: 100%; border-top-left-radius: 10px; border-top-right-radius: 10px;" />
+    <div class="card-body">
+        <h5 class="card-title">@ExistingTicket.Title</h5>
+        <p class="card-text">@ExistingTicket.Description</p>
+
+        <div class="icon-row">
+            @if (true || Helper.UserPermissions.Contains("Edit"))
+            {
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        @switch (ExistingTicket.Status)
+                        {
+                            case TicketStatus.InWork:
+                                <i class="fas fa-hard-hat text-warning me-2"></i>
+                                break;
+                            case TicketStatus.Done:
+                                <i class="fas fa-check text-success me-2"></i>
+                                break;
+                        }
+                    </button>
+                    <ul class="dropdown-menu"
+                    style="min-width: auto;">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center"
+                            @onclick="@(() => UpdateStatus(TicketStatus.Done))">
+                                <i class="fas fa-check text-success me-2"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center"
+                            @onclick="@(() => UpdateStatus(TicketStatus.InWork))">
+                                <i class="fas fa-hard-hat text-warning me-2"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                @switch (ExistingTicket.Status)
+                {
+                    case TicketStatus.InWork:
+                        <i class="fas fa-hard-hat" style="color: orange;"></i>
+                        break;
+                    case TicketStatus.Done:
+                        <i class="fas fa-check text-success"></i>
+                        break;
+                }
+            }
+
+
+            @if (DateTime.Now.AddDays(-3) <= ExistingTicket.Timestamp)
+            {
+                <i class="fas fa-info-circle text-danger"></i>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .problem-card {
+    background: rgba(50, 50, 50, 0.7);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    width: 60vw;
+    max-width: 600px;
+    margin: 20px auto;
+    margin-bottom: 20px;
+    height: auto;
+    }
+
+    .problem-card .card-title,
+    .problem-card .card-text {
+    color: white;
+    }
+
+
+    .icon-row {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 12px;
+    font-size: 1.2rem;
+    }
+
+</style>
+
+@code {
+
+    [Parameter]
+    public Ticket ExistingTicket { get; set; }
+
+    private async Task UpdateStatus(TicketStatus status)
+    {
+        var newStatus = new { Id = ExistingTicket.Id, Status = Convert.ToInt32(status), LastModified = DateTime.Now };
+        var conn = Helper.GetConnection();
+
+        await conn.ExecuteAsync(Helper.SQLQueries["set_ticket_status"].Statement, newStatus);
+
+        var ticketDictionary = new Dictionary<int, Ticket>();
+        ExistingTicket = (await conn.QueryAsync<Ticket, byte[], Ticket>(
+            Helper.SQLQueries["get_ticket_by_id"].Statement,
+            (ticket, image) =>
+            {
+                if (!ticketDictionary.TryGetValue(ticket.Id, out var currentTicket))
+                {
+                    currentTicket = ticket;
+                    currentTicket.Images = new List<byte[]>();
+                    ticketDictionary.Add(currentTicket.Id, currentTicket);
+                }
+
+                if (image != null)
+                    currentTicket.Images.Add(image);
+
+                return currentTicket;
+            },
+            param: newStatus,
+            splitOn: "img"
+        )).FirstOrDefault();
+    }
+}

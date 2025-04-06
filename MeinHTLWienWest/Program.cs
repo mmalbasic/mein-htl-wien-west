@@ -1,3 +1,5 @@
+using BlazorPanzoom;
+using Dapper;
 using MeinHTLWienWest.Components;
 using MeinHTLWienWest.Services;
 
@@ -9,11 +11,15 @@ namespace MeinHTLWienWest
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            SqlMapper.AddTypeHandler(new MarkerHandler());
             Helper.DBConnString = builder.Configuration.GetConnectionString("PostgresConnection") ?? throw new InvalidOperationException("Connection string 'DatabaseConnection' not found.");
             Helper.SQLQueries = builder.Configuration.GetSection("DBQueries").Get<List<SQLQuery>>().ToDictionary(q => q.Name);
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            builder.Services.AddBlazorPanzoomServices();
+            builder.Services.AddScoped<JsConsole>();
 
             var app = builder.Build();
 

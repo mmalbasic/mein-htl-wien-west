@@ -1,0 +1,312 @@
+﻿@page "/neue-meldung"
+@using MeinHTLWienWest.Services.Authentication
+@using NpgsqlTypes
+@inject NavigationManager navManager
+@inject JsConsole Console
+
+<PageTitle>Neue Meldung erstellen</PageTitle>
+
+
+<div class="header">
+    <h6>Made by Team Cerasis</h6>
+</div>
+
+<div class="content-center">
+    <h3>Neue Meldung erstellen</h3>
+</div>
+
+
+<div class="main-content">
+
+    <label class="label-text">Username</label>
+    <input class="input-text" type="text" disabled @bind-value="@Helper.TicketToSubmit.Username"/>
+
+    <label class="label-text">Titel der Meldung</label>
+    <input class="input-text" type="text" @bind-value="@Helper.TicketToSubmit.Title" />
+
+    <label class="label-text">Kategorie</label>
+    <select class="input-text" @bind="@Helper.TicketToSubmit.Category">
+        <option value="">Bitte wählen...</option>
+        <option value="Test1">Test1</option>
+        <option value="Test2">Test2</option>
+        <option value="Test3">Test3</option>
+    </select>
+
+    <label class="label-text">Priorität</label>
+    <select class="input-text" @bind="@Helper.TicketToSubmit.Priority">
+        <option value="">Bitte wählen...</option>
+        <option value="3">Niedrig</option>
+        <option value="2">Mittel</option>
+        <option value="1">Hoch</option>
+    </select>
+
+
+    <label class="label-text">Problem schildern</label>
+    <textarea class="input-text" rows="5" @bind="@Helper.TicketToSubmit.Description"></textarea>
+
+    <p style="color: red;">@status</p>
+
+    <div class="icon-buttons-container">
+
+        <label for="fileUpload" class="icon-button">
+            <i class="fas fa-image"></i>
+        </label>
+        <button class="icon-button" @onclick="@SelectOnMap">
+            <i class="fas fa-map"></i>
+        </button>
+
+        <InputFile multiple="" id="fileUpload" style="display: none;" OnChange="HandleSelectedImages" accept=".png,.jpg,image/png,image/jpg" />
+
+        <button class="icon-button" @onclick="@PostProblem" >
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+</div>
+
+<style>
+    html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #2a0a4a, #3b0e63, #4e148c);
+    font-family: 'Jost', sans-serif;
+    }
+
+    .header {
+    display: flex;
+    margin: 10px;
+    color: white;
+    }
+
+    .content-center {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    color: white;
+    }
+
+    .main-content {
+    background: rgba(50, 50, 50, 0.7);
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    margin: 20px auto;
+    }
+
+    .label-text {
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    }
+
+    .input-text {
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: none;
+    padding: 8px;
+    outline: none;
+    }
+
+
+    .icon-buttons-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    }
+
+
+    .icon-button {
+    width: 45px;
+    height: 45px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: 0.2s ease-in;
+    }
+    .icon-button:hover {
+    background: rgba(30, 30, 30, 1);
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    }
+
+
+    .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: black;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 999;
+    }
+    .nav-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+    }
+    .nav-button:hover {
+    color: #bbb;
+    }
+</style>
+
+@code
+{
+    private string priority;
+    private string status;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Helper.TicketToSubmit.Username = Helper.CurrentEmail;
+    }
+
+    private async Task PostProblem()
+    {
+        if (Helper.TicketToSubmit.Description == null || Helper.TicketToSubmit.Description == "")
+        {
+            status = "Das Problem muss geschildert werden";
+        }
+        else if (Helper.TicketToSubmit.Category == null || Helper.TicketToSubmit.Category == "")
+        {
+            status = "Es muss eine Kategorie ausgewählt werden";
+        }
+        else if (Helper.TicketToSubmit.Title == null || Helper.TicketToSubmit.Title == "")
+        {
+            status = "Es muss ein Titel angegeben werden";
+        }
+        else if (Helper.TicketToSubmit.Priority == null || Helper.TicketToSubmit.Priority == "")
+        {
+            status = "Es muss eine Priorität angegeben werden";
+
+        }
+        else if (Helper.ProblemMarker.X == -1)
+        {
+            status = "Es muss ein Ort auf der Karte angegeben werden";
+        }
+        else
+        {
+            status = "";
+
+
+            var conn = Helper.GetConnection();
+            conn.Open();
+
+            using (var transaction = await conn.BeginTransactionAsync())
+            {
+                //posting problem to the DB
+
+                var problem = new  {
+                    Priority = Convert.ToInt32(Helper.TicketToSubmit.Priority), 
+                    Title = Helper.TicketToSubmit.Title, 
+                    Description = Helper.TicketToSubmit.Description, 
+                    Category = Helper.TicketToSubmit.Category,
+                    ClientId = Helper.CurrentUserId,
+                    Floor = Helper.SelectedMarkerFloor,
+                    XCoord = Helper.ProblemMarker.X,
+                    YCoord = Helper.ProblemMarker.Y,
+                    Status = (int)TicketStatus.InWork,
+                    Timestamp = DateTime.Now
+                };
+                int new_problem_id = (int)await conn.ExecuteScalarAsync(Helper.SQLQueries["post_problem"].Statement, problem);
+
+
+                //uploading images to the DB
+                foreach (string path in Helper.TicketToSubmit.ImagePaths)
+                {
+                    var image = new { ProblemId = new_problem_id, Image = File.ReadAllBytes(path) };
+                    await conn.ExecuteAsync(Helper.SQLQueries["upload_problem_image"].Statement, image);
+                    File.Delete(path);
+                }
+
+
+                await transaction.CommitAsync();
+            }
+
+            Helper.TicketToSubmit = new SubmitTicketDTO();
+            Helper.ProblemMarker = new Marker() { X = -1, Y = -1 };
+
+            if (Helper.CerasisToken != null)
+            {
+                string transactionStatus = await CerasisManager.GiveCerasis(TransactionReason.NewTicket);
+
+                if (transactionStatus != "OK")
+                {
+                    await Console.LogAsync(transactionStatus);
+                }
+            }
+            
+
+            navManager.NavigateTo("/meldungen");
+
+        }
+    }
+
+    private void SelectOnMap()
+    {
+        navManager.NavigateTo("/karte-markieren");
+    }
+
+    public async Task HandleSelectedImages(InputFileChangeEventArgs e)
+    {
+        var browserFiles = e.GetMultipleFiles();
+
+        foreach (var browserFile in browserFiles)
+        {
+            if (browserFile != null)
+            {
+                try
+                {
+                    if (browserFile.ContentType == "image/png" || browserFile.ContentType == "image/jpg")
+                    {
+                        var fileStream = browserFile.OpenReadStream(2000000);
+
+                        var randomFile = Path.GetTempFileName();
+                        var extension = Path.GetExtension(browserFile.Name);
+                        var targetFilePath = Path.ChangeExtension(randomFile, extension);
+
+                        var destinationStream = new FileStream(targetFilePath, FileMode.Create);
+                        await fileStream.CopyToAsync(destinationStream);
+                        destinationStream.Close();
+
+                        Helper.TicketToSubmit.ImagePaths.Add(targetFilePath);
+
+                    }
+                    else
+                    {
+                        status = "Ungültiges Bildformat";
+                    }
+
+                }
+                catch (IOException exception)
+                {
+                    status = "Die Datei ist größer als 2MB!";
+                  
+                }
+                catch (Exception ex)
+                {
+                    status = "Ein Fehler ist beim Hochladen aufgetreten";
+                }
+            }
+        }
+    }
+ }
+

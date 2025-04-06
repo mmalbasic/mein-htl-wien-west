@@ -1,0 +1,174 @@
+﻿@page "/meldungen"
+
+<PageTitle>Neue Meldungen</PageTitle>
+
+<!-- Seiteninhalt (z. B. Problem-Karten) -->
+<div class="page-bg">
+    <!-- Header-Bereich -->
+    <div class="container-fluid text-center">
+        <h3 class="text-white mb-3">Meldungen</h3>
+    </div>
+
+    <div class="ticketScrolllist">
+        @foreach (Ticket t in Tickets)
+        {
+            <TicketView ExistingTicket="t"></TicketView>
+        }
+    </div>
+  
+</div>
+
+<!-- Fixed Toggle-Container, direkt über dem Footer -->
+<div class="toggle-container">
+    @if (showSelection)
+    {
+        <div class="filterselection">
+            <button class="btn btn-dark filterselectionbtn" @onclick="@(() => SelectFilter("Alle"))">Alle</button>
+            <button class="btn btn-dark filterselectionbtn" @onclick="@(() => SelectFilter("Neueste"))">Neueste</button>
+            <button class="btn btn-dark filterselectionbtn" @onclick="@(() => SelectFilter("In Bearbeitung"))">In Bearbeitung</button>
+            <button class="btn btn-dark filterselectionbtn" @onclick="@(() => SelectFilter("Fertig"))">Fertig</button>
+            <button class="filterselectionbtn btn btn-dark" @onclick="@(() => SelectFilter("Meine"))">Meine</button>
+        </div>
+    }
+    <button class="filterbtn btn btn-dark" @onclick="ShowSelection">@selectedFilter</button>
+</div>
+
+<style>
+    .ticketScrolllist {
+        max-height: calc(100vh - 200px); /* Adjust based on header + toggle-container */
+        overflow-y: auto;
+    }
+
+    /* Gesamter Hintergrund in Lila */
+    html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4e148c;
+    }
+
+    /* Seiteninhalt (nicht fixiert – scrollbar, falls nötig) */
+    .page-bg {
+    width: 100%;
+    background-color: #4e148c;
+    padding: 20px;
+    box-sizing: border-box;
+    /* Extra unterer Abstand, damit der fixierte Bereich nicht Inhalt überdeckt */
+    padding-bottom: 80px;
+    }
+
+    /* Problem-Karten (Glas-Effekt) */
+
+
+    .toggle-container {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    }
+
+    .filterbtn {
+    width: 100vw;
+    height: 65px;
+    text-align: left;
+    font-size: 24px;
+    margin: 0;
+    padding: 0 10px;
+    margin-left: -5vw;
+    }
+
+    .filterselection {
+    display: flex;
+    flex-direction: column;
+    }
+
+
+    .filterselectionbtn {
+    width: 100vw;
+    height: 50px;
+    text-align: left;
+    font-size: 24px;
+    margin: 0;
+    padding: 0 10px;
+    border-radius: 0;
+    margin-left: -5vw;
+    }
+</style>
+
+@code {
+    private List<Ticket> Tickets { get; set; } = new List<Ticket>();
+    private List<Ticket> OrigTickets { get; set; } = new List<Ticket>();
+    private bool showSelection = false;
+    private void ShowSelection()
+    {
+        showSelection = !showSelection;
+    }
+
+    private string selectedFilter = "Alle";
+    private async Task SelectFilter(string filter)
+    {
+        await GetTickets();
+        selectedFilter = filter;
+        switch (filter)
+        {
+            case "Meine":
+                Tickets = Tickets.Where(t => t.ClientEmail == Helper.CurrentEmail).ToList();
+                break;
+            case "Neueste":
+                Tickets = Tickets.Where(t => DateTime.Now.AddDays(-3) <= t.Timestamp).ToList();
+                break;
+            case "In Bearbeitung":
+                Tickets = Tickets.Where(t => t.Status == TicketStatus.InWork).ToList();
+                break;
+            case "Fertig":
+                Tickets = Tickets.Where(t => t.Status == TicketStatus.Done).ToList();
+                break;
+            default:
+                Tickets = OrigTickets;
+                break;
+        }
+        ShowSelection();
+    }
+
+    private async Task GetTickets()
+    {
+        var conn = Helper.GetConnection();
+
+        var ticketDictionary = new Dictionary<int, Ticket>();
+
+        var tickets = await conn.QueryAsync<Ticket, byte[], Ticket>(
+            Helper.SQLQueries["get_tickets"].Statement,
+            (ticket, image) =>
+            {
+                if (!ticketDictionary.TryGetValue(ticket.Id, out var currentTicket))
+                {
+                    currentTicket = ticket;
+                    currentTicket.Images = new List<byte[]>();
+                    ticketDictionary.Add(currentTicket.Id, currentTicket);
+                }
+
+                if (image != null)
+                    currentTicket.Images.Add(image);
+
+                return currentTicket;
+            },
+            splitOn: "img"
+        );
+
+        OrigTickets = ticketDictionary.Values.ToList();
+        Tickets = ticketDictionary.Values.ToList();
+
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(async () => await GetTickets());
+    }
+}

@@ -18,22 +18,12 @@
 
 <!-- Hauptbereich mit dem Button "Neue Meldung" -->
 <div class="main-content">
-    <button class="login-button" @onclick='() => navManager.NavigateTo("/neue-meldungen")'>
+    <button class="login-button" @onclick='() => navManager.NavigateTo("/neue-meldung")'>
         Neue Meldung
     </button>
 </div>
 
-<!-- Fixierte Navigationsleiste am unteren Rand -->
-<div class="bottom-nav">
-    <button class="nav-button" @onclick='() => navManager.NavigateTo("/main")'>Start</button>
-    <button class="nav-button" @onclick='() => navManager.NavigateTo("/meldungen")'>Meldungen</button>
-    <button class="nav-button" @onclick='() => navManager.NavigateTo("/karte")'>Karte</button>
-    <button class="nav-button" @onclick='() => navManager.NavigateTo("/forum")'>Forum</button>
-</div>
 
-@code {
-    // Keine zusätzliche Logik benötigt.
-}
 
 <style>
     body {
@@ -118,3 +108,4 @@
         color: #bbb;
     }
 </style>
+
