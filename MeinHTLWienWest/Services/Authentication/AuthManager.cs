@@ -85,10 +85,10 @@ namespace MeinHTLWienWest.Services.Authentication
             switch (selectedRole)
             {
                 case "Schüler":
-                    privileges = new List<int>() { 2, 3, 4 };
+                    privileges = new List<int>() { 3, 4 };
                     break;
                 case "Lehrer":
-                    privileges = new List<int>() { 1, 2, 3, 4 };
+                    privileges = new List<int>() { 2, 3, 4 };
                     break;
                 default:
                     status = "Bitte Ihre Position eintragen";

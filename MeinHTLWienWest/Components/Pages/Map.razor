@@ -11,6 +11,54 @@
         <p class="text-white mb-4">Wähle ein Stockwerk aus:</p>
     </div>
 
+    <div id="image-container" style="background-color:#00000044">
+        @switch (selectedFilter)
+        {
+            case "Untergeschoss":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/EU-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+            case "Erdgeschoss":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/EG-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+            case "1. Stock":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/E1-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+            case "2. Stock":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/E2-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+            case "3. Stock":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/E3-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+            case "Dachgeschoss":
+                <Panzoom>
+                    <img @ref="@context.ElementReference"
+                         src="resource/ED-Bitmap.png"
+                         alt="image" />
+                </Panzoom>
+                break;
+        }
+
+    </div>
     <div class="toggle-container">
         @if (showFloors)
         {
@@ -29,74 +77,71 @@
 
 <style>
 
-  html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #4e148c; 
-  }
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #4e148c;
+        overflow: hidden;
+    }
 
-  .page-bg {
-      min-height: 100vh;
-      width: 100%;
-      background-color: #4e148c;
-      margin: 0;
-  }
-
-  .toggle-container {
-      position: fixed;
-      bottom: 60px; 
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-  }
-
-  .problem-card {
-      background: rgba(50, 50, 50, 0.7);
-      border: none;
-      border-radius: 10px;
-      box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
-      width: 90%;
-      max-width: 600px;
-  }
-
-  .floorbtn {
-      width: 100vw;
-      height: 65px;
-      text-align: left;
-      font-size: 24px;
-      margin: 0;
-      padding: 0 10px;
-      margin-left: -5vw;
-  }
-
-  .floorselection {
-      display: flex;
-      flex-direction: column;
-  }
+    .page-bg {
+        min-height: 100vh;
+        width: 100%;
+        background-color: #4e148c;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
 
 
-  .floorselectionbtn {
-      width: 100vw;
-      height: 50px;
-      text-align: left;
-      font-size: 24px;
-      margin: 0;
-      padding: 0 10px;
-      border-radius: 0;
-      margin-left: -5vw;
-  }
+    #image-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+    }
+
+    .toggle-container {
+        position: fixed;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .floorbtn {
+        width: 100vw;
+        height: 65px;
+        text-align: left;
+        font-size: 24px;
+        margin: 0;
+        padding: 0 10px;
+    }
 
 
-  .problem-card .card-title,
-  .problem-card .card-text {
-      color: white;
-  }
+    .floorselection {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .floorselectionbtn {
+        width: 100vw;
+        height: 50px;
+        text-align: left;
+        font-size: 24px;
+        padding: 0 10px;
+        border-radius: 0;
+        margin-left: -5vw;
+    }
 </style>
 
 @code
