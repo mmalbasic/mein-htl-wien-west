@@ -126,7 +126,7 @@ namespace MeinHTLWienWest.Services.Authentication
             {
                 client.DefaultRequestHeaders.Add("Email", email);
                 client.DefaultRequestHeaders.Add("Password", password);
-                using HttpResponseMessage response = await client.GetAsync("https://www.cerasis.eu/api/remote-auth");
+                using HttpResponseMessage response = await client.GetAsync("https://localhost:7260/api/remote-auth");
                 {
                     try
                     {
