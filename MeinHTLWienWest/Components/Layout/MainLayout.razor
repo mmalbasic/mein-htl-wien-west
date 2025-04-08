@@ -9,23 +9,20 @@
         </article>
 
         <nav>
-            <!-- Klick auf "Start" -> geht zur Main-Seite. 
-                 Der zweite Parameter true sorgt dafür, dass sie neu geladen wird, 
-                 falls du bereits auf /main bist. -->
             <button class="nav-item" @onclick='() => navManager.NavigateTo("/main", true)'>
-                🏠<br>Start
+                <i class="fa-solid fa-house"></i><br>Start
             </button>
 
             <button class="nav-item" @onclick='() => navManager.NavigateTo("/meldungen", true)'>
-                ✉️<br>Meldungen
+                <i class="fa-solid fa-envelope"></i><br>Meldungen
             </button>
 
             <button class="nav-item"  @onclick='() => navManager.NavigateTo("/karte")'>
-                ❗<br>Karte
+                <i class="fa-solid fa-map"></i><br>Karte
             </button>
 
             <button class="nav-item" >
-                📄<br>Forum
+                <i class="fa-solid fa-comments"></i><br>Forum
             </button>
         </nav>
     </main>
