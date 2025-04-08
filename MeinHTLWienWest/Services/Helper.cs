@@ -9,7 +9,7 @@ namespace MeinHTLWienWest.Services
     {
         public static bool IsSent { get; set; }
         public static string CurrentEmail { get; set; }
-        public static int CurrentUserId { get; set; }
+        public static int CurrentUserId { get; set; } = -1;
         public static bool SetMapPoint { get; set; }
         public static Marker ProblemMarker { get; set; } = new Marker() { X = -1, Y = -1 };
         public static int SelectedMarkerFloor { get; set; } = 0;

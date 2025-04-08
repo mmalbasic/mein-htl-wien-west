@@ -11,13 +11,13 @@
     <div class="container-fluid text-center">
         <h3 class="text-white mb-3">Karte / Etagenauswahl</h3>
         <p class="text-white mb-4">Wähle ein Stockwerk aus:</p>
-        <div id="image-container" @ref="imageContainer" @onclick="AddMarker">
+        <div id="image-container" @ref="imageContainer" style="background-color:#00000044" @onclick="AddMarker">
             <Panzoom>
                 <img @ref="@context.ElementReference"
-                     src="resource/@(floor).png"
-                     alt="image" />
+                src="resource/@(floor).png"
+                alt="image"/>
             </Panzoom>
-            <div class="marker" style="display: @(Helper.ProblemMarker.X == 0 ? "none" : "block");left:@Helper.ProblemMarker.X%; top:@Helper.ProblemMarker.Y%;"></div>
+            <div class="marker" style="display: @(Helper.ProblemMarker.X == 0 ? "none" : "block");left:@Helper.ProblemMarker.X.ToString().Replace(',','.')%; top:@Helper.ProblemMarker.Y.ToString().Replace(',','.')%;"></div>
         </div>
     </div>
 
@@ -36,119 +36,119 @@
         <button class="floorbtn btn btn-dark" @onclick="ShowFloors">@selectedFilter</button>
     </div>
 
-        <div class="bottom-button-container">
+    <div class="bottom-button-container">
         <button class="btn wide-btn" @onclick="@(() => navManager.NavigateTo("/neue-meldung"))">Zurück</button>
     </div>
 </div>
 
 <style>
     .wide-btn {
-        width: 35vw;
-        height: 60px;
-        font-size: 24px;
-        border-radius: 5px;
-        margin-top: -25vh;
-        background-color: #3a148c;
-        color: white;
+    width: 35vw;
+    height: 60px;
+    font-size: 24px;
+    border-radius: 5px;
+    margin-top: -25vh;
+    background-color: #3a148c;
+    color: white;
     }
     .bottom-button-container {
-        position: absolute;
-        bottom: 20px; /* Near the bottom of the screen */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        display: flex;
-        justify-content: center;
+    position: absolute;
+    bottom: 20px; /* Near the bottom of the screen */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
     }
     html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #4e148c;
-        overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4e148c;
+    overflow: hidden;
     }
 
     .page-bg {
-        min-height: 100vh;
-        width: 100%;
-        background-color: #4e148c;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #4e148c;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     }
 
 
     #image-container {
-        position: relative;
-        width: 100%;
-        height: auto; 
-        overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: auto; 
+    overflow: hidden;
     }
 
     #zoomable-image {
-        width: 100%;
-        height: auto;
+    width: 100%;
+    height: auto;
     }
 
     .marker {
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        background-color: red;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
     }
 
     .toggle-container {
-        position: fixed;
-        bottom: 60px; 
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    position: fixed;
+    bottom: 60px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     }
 
     .floorbtn {
-        width: 100vw;
-        height: 65px;
-        text-align: left;
-        font-size: 24px;
-        margin: 0;
-        padding: 0 10px;
+    width: 100vw;
+    height: 65px;
+    text-align: left;
+    font-size: 24px;
+    margin: 0;
+    padding: 0 10px;
     }
 
 
     .floorselection {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     }
 
     .floorselectionbtn {
-        width: 100%;
-        height: 50px;
-        text-align: left;
-        font-size: 24px;
-        padding: 0 10px;
-        border-radius: 0;
+    width: 100%;
+    height: 50px;
+    text-align: left;
+    font-size: 24px;
+    padding: 0 10px;
+    border-radius: 0;
     }
 
     .problem-card {
-        background: rgba(50, 50, 50, 0.7);
-        border: none;
-        border-radius: 10px;
-        box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        width: 90%;
-        max-width: 600px;
+    background: rgba(50, 50, 50, 0.7);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    width: 90%;
+    max-width: 600px;
     }
 
 
@@ -180,15 +180,18 @@
                 break;
             case "1. Stock":
                 Helper.SelectedMarkerFloor = 1;
+                floor = "E1-Bitmap";
                 break;
             case "2. Stock":
                 Helper.SelectedMarkerFloor = 2;
                 break;
             case "3. Stock":
                 Helper.SelectedMarkerFloor = 3;
+                floor = "F3";
                 break;
             case "Dachgeschoss":
                 Helper.SelectedMarkerFloor = 4;
+                floor = "FD";
                 break;
         }
         ShowFloors();

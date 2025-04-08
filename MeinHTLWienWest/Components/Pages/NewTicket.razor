@@ -213,7 +213,16 @@
             using (var transaction = await conn.BeginTransactionAsync())
             {
                 //posting problem to the DB
-
+                // Console.LogAsync(Helper.TicketToSubmit.Priority + " : Priority");
+                // Console.LogAsync(Helper.TicketToSubmit.Title + " : Title");
+                // Console.LogAsync(Helper.TicketToSubmit.Description + " : Desc");
+                // Console.LogAsync(Helper.TicketToSubmit.Category + " : Cat");
+                // Console.LogAsync(Helper.CurrentUserId + " : UserID");
+                // Console.LogAsync(Helper.SelectedMarkerFloor + " : MarkerFloor");
+                // Console.LogAsync(Helper.ProblemMarker.X + " : MarkerX");
+                // Console.LogAsync(Helper.ProblemMarker.Y + " : MarkerY");
+                // Console.LogAsync(TicketStatus.InWork + " : Status");
+                // Console.LogAsync(DateTime.Now + " : Date");
                 var problem = new  {
                     Priority = Convert.ToInt32(Helper.TicketToSubmit.Priority), 
                     Title = Helper.TicketToSubmit.Title, 
