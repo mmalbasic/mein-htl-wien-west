@@ -158,7 +158,7 @@
 {
     private ElementReference imageContainer;
 
-    private string floor = "White_Rectangle1";
+    private string floor = "EG";
     private bool showFloors = false;
     private void ShowFloors()
     {
@@ -174,9 +174,11 @@
         {
             case "Untergeschoss":
                 Helper.SelectedMarkerFloor = -1;
+                floor = "EU";
                 break;
             case "Erdgeschoss":
                 Helper.SelectedMarkerFloor = 0;
+                floor = "EG";
                 break;
             case "1. Stock":
                 Helper.SelectedMarkerFloor = 1;
@@ -184,6 +186,7 @@
                 break;
             case "2. Stock":
                 Helper.SelectedMarkerFloor = 2;
+                floor = "E2-Bitmap";
                 break;
             case "3. Stock":
                 Helper.SelectedMarkerFloor = 3;
@@ -191,7 +194,7 @@
                 break;
             case "Dachgeschoss":
                 Helper.SelectedMarkerFloor = 4;
-                floor = "FD";
+                floor = "ED";
                 break;
         }
         ShowFloors();
