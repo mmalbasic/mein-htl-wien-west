@@ -85,10 +85,10 @@ namespace MeinHTLWienWest.Services.Authentication
             switch (selectedRole)
             {
                 case "Schüler":
-                    privileges = new List<int>() { (int)Priviledges.Read_Forum, (int)Priviledges.Write_Forum, (int)Priviledges.Read_Problem };
+                    privileges = new List<int>() { (int)Priviledges.View, (int)Priviledges.Edit, (int)Priviledges.Create };
                     break;
                 case "Lehrer":
-                    privileges = new List<int>() { (int)Priviledges.Read_Forum, (int)Priviledges.Write_Forum, (int)Priviledges.Read_Problem, (int)Priviledges.Write_Problem };
+                    privileges = new List<int>() { (int)Priviledges.View, (int)Priviledges.Edit, (int)Priviledges.Create, (int)Priviledges.Admin };
                     break;
                 default:
                     status = "Bitte Ihre Position eintragen";

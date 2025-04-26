@@ -158,7 +158,7 @@
         {
             SecureRandom random = new SecureRandom();
             correctOtpCode = random.Next(0, 1000000).ToString().PadLeft(6, '0');
-            Helper.IsSent = AuthManager.SendOTPCode(correctOtpCode, Helper.CurrentEmail);
+            //Helper.IsSent = AuthManager.SendOTPCode(correctOtpCode, Helper.CurrentEmail);
         }
     }
 

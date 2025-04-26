@@ -175,14 +175,12 @@
     private string status;
 
 
-
     protected override async Task OnInitializedAsync()
     {
         Helper.TicketToSubmit.Username = Helper.CurrentEmail;
     }
 
-    private async Task PostProblem()
-    {
+    private async Task PostProblem() {
         if (Helper.TicketToSubmit.Description == null || Helper.TicketToSubmit.Description == "")
         {
             status = "Das Problem muss geschildert werden";

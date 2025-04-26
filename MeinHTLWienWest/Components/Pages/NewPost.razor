@@ -1,0 +1,140 @@
+﻿@page "/forum/new"
+@inject NavigationManager navManager
+
+<PageTitle>Neues Thema</PageTitle>
+
+<div class="new-post-container">
+    <!-- Abbrechen-Button -->
+    <button class="cancel-btn"
+            type="button"
+            title="Abbrechen"
+            @onclick="Cancel">
+        <i class="bi bi-x-circle-fill"></i>
+    </button>
+
+    <!-- Formular -->
+    <div class="form-body">
+        <label class="username-label">User</label>
+        <input type="text" placeholder="Titel" class="title-input" />
+        <textarea placeholder="Nachricht schreiben…" class="message-input"></textarea>
+    </div>
+
+    <!-- Footer mit Bild- und Post-Icon -->
+    <div class="new-post-footer">
+        <button class="icon-btn image-btn" title="Bild hinzufügen" type="button">
+            <i class="bi bi-image"></i>
+        </button>
+        <button class="icon-btn submit-btn" title="Posten" type="button">
+            <i class="bi bi-arrow-up"></i>
+        </button>
+    </div>
+</div>
+
+@code {
+    void Cancel()
+    {
+        navManager.NavigateTo("/forum");
+    }
+}
+<style>
+    /* Globales Lila auf den Body anwenden */
+    body {
+        background: #3c0e65;
+        font-family: 'Jost', sans-serif;
+        margin: 0;
+        padding: 0 0 120px; /* Platz für Footer, Kommentarbox & Stift */
+        color: #fff;
+    }
+
+    .new-post-container {
+        max-width: 400px;
+        margin: 60px auto 0;
+        position: relative;
+    }
+
+    .cancel-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        font-size: 1.6em;
+        color: #bbb;
+        cursor: pointer;
+        transition: color .2s;
+    }
+
+        .cancel-btn:hover {
+            color: #fff;
+        }
+
+    .form-body {
+        background: rgba(47,31,62,0.9);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+        margin-top: 40px;
+    }
+
+    .username-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #ccc;
+        font-size: 0.9em;
+    }
+
+    .title-input,
+    .message-input {
+        width: 100%;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 6px;
+        background: rgba(255,255,255,0.1);
+        color: #eee;
+        font-size: 1em;
+        margin-bottom: 12px;
+        padding: 10px;
+        outline: none;
+    }
+
+    .message-input {
+        height: 120px;
+        resize: none;
+    }
+
+    .new-post-footer {
+        position: fixed;
+        bottom: 80px; 
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 400px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+    }
+
+
+        /* gemeinsame Styles für beide Buttons */
+        .new-post-footer .icon-btn {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+            .new-post-footer .icon-btn:hover {
+                background: rgba(0,0,0,0.8);
+            }
+
+            /* Icon-Farbe und -Größe */
+            .new-post-footer .icon-btn i {
+                font-size: 1.5em;
+                color: #fff;
+            }
+</style>
