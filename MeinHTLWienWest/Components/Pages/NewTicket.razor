@@ -238,8 +238,14 @@
                 int new_problem_id = (int)await conn.ExecuteScalarAsync(Helper.SQLQueries["post_problem"].Statement, problem);
 
                 int[] notify_users_id = (int[])await conn.ExecuteScalarAsync(Helper.SQLQueries["get_users_id_from_notify_catagory"].Statement, new  { Category = Helper.TicketToSubmit.Category});
+                if (notify_users_id == null) notify_users_id = new int[0];
+
                 foreach (int user_id in notify_users_id) {
-                    // TODO : Finish Notifying the Admins.
+                    string notify_mail = (string)await conn.ExecuteScalarAsync(Helper.SQLQueries["get_user_email"].Statement, new { Id = user_id });
+                    if (notify_mail == null) continue; // ignore empty mails if any exist.
+
+                    // TODO : Finish Sent Mail to User.
+
                 }
 
 

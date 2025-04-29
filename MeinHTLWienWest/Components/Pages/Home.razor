@@ -3,12 +3,15 @@
 @layout LoginLayout
 @using MeinHTLWienWest.Components.Layout
 
+@using MeinHTLWienWest.Services.Authentication
 
 <PageTitle>Home</PageTitle>
 
+<!-- Remove Auth when done testing -->
+
 <!--
 <div class="center">
-    <img src="resource/icon.png" width="200px" height="200px"/> 
+<img src="resource/icon.png" width="200px" height="200px"/> 
 </div>
 -->
 
@@ -23,13 +26,13 @@
         Anmelden ohne Cerasis
     </button>
 
-    <button class="login-button" @onclick="@(() => RedirectTo("/main"))">
+    <button class="login-button" @onclick="TempLogin">
         Weiter ohne Account
     </button>
 </div>
 
 <style>
-   body {
+    body {
     margin: 0;
     padding: 0;
     display: grid;
@@ -38,9 +41,9 @@
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
     background: linear-gradient(to bottom, #2a0a4a, #3b0e63, #4e148c); 
-}
+    }
 
-.main {
+    .main {
     width: 350px;
     height: 300px;
     background: rgba(50, 50, 50, 0.7); 
@@ -52,22 +55,22 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-}
+    }
 
-.center {
+    .center {
     display: flex;
     align-items: center;
     justify-content: center;
-}
+    }
 
-.title {
+    .title {
     color: white;
     font-size: 1.8em;
     font-weight: bold;
     margin-bottom: 15px;
-}
+    }
 
-.login-button {
+    .login-button {
     width: 80%;
     height: 45px;
     margin: 10px 0;
@@ -81,33 +84,44 @@
     border-radius: 5px;
     transition: .2s ease-in;
     cursor: pointer;
-}
+    }
 
-.cerasis {
+    .cerasis {
     background: black;
     color: white;
-}
+    }
 
-.cerasis:hover {
+    .cerasis:hover {
     background: rgba(30, 30, 30, 1);
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
-}
+    }
 
-.ohne-cerasis {
+    .ohne-cerasis {
     background: rgba(30, 30, 30, 0.8);
     color: #bbb;
-}
+    }
 
-.ohne-cerasis:hover {
+    .ohne-cerasis:hover {
     background: rgba(50, 50, 50, 1);
     color: white;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
-}
+    }
 
 
 </style>
 
 @code {
+    private async void TempLogin() { // REMOVE THIS ONCE THE PROJECT IS FINISHED.
+        await Task.Run(async () =>
+        {
+            var conn = Helper.GetConnection();
+            Helper.IsNewUser = await conn.ExecuteScalarAsync<bool>(Helper.SQLQueries["is_new_user"].Statement, new { Email = "schreiner.a20@htlwienwest.at" });
+        });
+        Helper.CurrentEmail = "schreiner.a20@htlwienwest.at";
+
+        await AuthManager.Login();
+        RedirectTo("/main");
+    }
     private void RedirectTo(string page)
     {
         navManager.NavigateTo(page, true);
