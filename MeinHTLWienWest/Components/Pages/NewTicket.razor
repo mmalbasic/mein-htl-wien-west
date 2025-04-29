@@ -237,6 +237,11 @@
                 };
                 int new_problem_id = (int)await conn.ExecuteScalarAsync(Helper.SQLQueries["post_problem"].Statement, problem);
 
+                int[] notify_users_id = (int[])await conn.ExecuteScalarAsync(Helper.SQLQueries["get_users_id_from_notify_catagory"].Statement, new  { Category = Helper.TicketToSubmit.Category});
+                foreach (int user_id in notify_users_id) {
+                    // TODO : Finish Notifying the Admins.
+                }
+
 
                 //uploading images to the DB
                 foreach (string path in Helper.TicketToSubmit.ImagePaths)
