@@ -11,65 +11,25 @@
         <p class="text-white mb-4">Wähle ein Stockwerk aus:</p>
     </div>
 
-    <div id="image-container" style="background-color:#00000044">
-        @switch (selectedFilter)
-        {
-            case "Untergeschoss":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/EU-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-            case "Erdgeschoss":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/EG-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-            case "1. Stock":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/E1-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-            case "2. Stock":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/E2-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-            case "3. Stock":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/E3-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-            case "Dachgeschoss":
-                <Panzoom>
-                    <img @ref="@context.ElementReference"
-                         src="resource/ED-Bitmap.png"
-                         alt="image" />
-                </Panzoom>
-                break;
-        }
+    <div id="image-container" class="@(cssState)" style="background-color:#00000044;">
+        <Panzoom>
+            <img @ref="@context.ElementReference"
+            src="resource/@(mapPaths[selectedFilter]).png"
+            alt="image"/>
+        </Panzoom>
 
     </div>
     <div class="toggle-container">
         @if (showFloors)
         {
-                <div class="floorselection">
-                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Dachgeschoss"))">Dachgeschoss</button>
-                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("3. Stock"))">3. Stock</button>
-                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("2. Stock"))">2. Stock</button>
-                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("1. Stock"))">1. Stock</button>
-                    <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Erdgeschoss"))">Erdgeschoss</button>
-                    <button class="floorselectionbtn btn btn-dark" @onclick="@(() => SelectFilter("Untergeschoss"))">Untergeschoss</button>
-                </div>
+            <div class="floorselection">
+                <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Dachgeschoss"))">Dachgeschoss</button>
+                <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("3. Stock"))">3. Stock</button>
+                <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("2. Stock"))">2. Stock</button>
+                <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("1. Stock"))">1. Stock</button>
+                <button class="btn btn-dark floorselectionbtn" @onclick="@(() => SelectFilter("Erdgeschoss"))">Erdgeschoss</button>
+                <button class="floorselectionbtn btn btn-dark" @onclick="@(() => SelectFilter("Untergeschoss"))">Untergeschoss</button>
+            </div>
         }
         <button class="floorbtn btn btn-dark" @onclick="ShowFloors">@selectedFilter</button>
     </div>   
@@ -78,85 +38,114 @@
 <style>
 
     html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #4e148c;
-        overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4e148c;
+    overflow: hidden;
+    }
+
+    .img, .img-out {
+    transition: 0.3s ease-in-out;
+    margin-top:0%;
+    }
+    .img-out {
+    margin-top: 100%;
+    }
+    .img-in {
+    margin-top: -100%;
     }
 
     .page-bg {
-        min-height: 100vh;
-        width: 100%;
-        background-color: #4e148c;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #4e148c;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     }
 
 
     #image-container {
-        position: relative;
-        width: 100%;
-        height: auto;
-        overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
     }
 
     .toggle-container {
-        position: fixed;
-        bottom: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     }
 
     .floorbtn {
-        width: 100vw;
-        height: 65px;
-        text-align: left;
-        font-size: 24px;
-        margin: 0;
-        padding: 0 10px;
+    width: 100vw;
+    height: 65px;
+    text-align: left;
+    font-size: 24px;
+    margin: 0;
+    padding: 0 10px;
     }
 
 
     .floorselection {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     }
 
     .floorselectionbtn {
-        width: 100vw;
-        height: 50px;
-        text-align: left;
-        font-size: 24px;
-        padding: 0 10px;
-        border-radius: 0;
-        margin-left: -5vw;
+    width: 100vw;
+    height: 50px;
+    text-align: left;
+    font-size: 24px;
+    padding: 0 10px;
+    border-radius: 0;
+    margin-left: -5vw;
     }
 </style>
 
 @code
 {
     private bool showFloors = false;
+    private string cssState = "img";
+
     private void ShowFloors()
     {
         showFloors = !showFloors;
     }
 
-
+    private Dictionary<string, string> mapPaths = new Dictionary<string, string>() { 
+        { "Untergeschoss", "EU-Bitmap"},
+        { "Erdgeschoss", "EG-Bitmap" },
+        { "1. Stock", "E1-Bitmap" },
+        { "2. Stock", "E2-Bitmap" },
+        { "3. Stock", "E3-Bitmap" },
+        { "Dachgeschoss", "ED-Bitmap" },
+    };
     private string selectedFilter = "Erdgeschoss";
-    private void SelectFilter(string filter)
+    private async void SelectFilter(string filter)
     {
-        selectedFilter = filter;
         ShowFloors();
+        if (selectedFilter == filter)
+            return; // no transition needed.
+        cssState = "img-out";
+        await Task.Delay(300);
+        cssState = "img-in";
+        StateHasChanged();
+        await Task.Delay(100);
+        selectedFilter = filter;
+        cssState = "img";
+        StateHasChanged();
     }
 }

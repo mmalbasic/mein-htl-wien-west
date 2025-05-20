@@ -11,10 +11,10 @@
     <div class="container-fluid text-center">
         <h3 class="text-white mb-3">Karte / Etagenauswahl</h3>
         <p class="text-white mb-4">Wähle ein Stockwerk aus:</p>
-        <div id="image-container" @ref="imageContainer" style="background-color:#00000044" @onclick="AddMarker">
+        <div id="image-container" class="@(cssState)" @ref="imageContainer" style="background-color:#00000044" @onclick="AddMarker">
             <Panzoom>
                 <img @ref="@context.ElementReference"
-                src="resource/@(floor).png"
+                src="resource/@(mapPaths[selectedFilter]).png"
                 alt="image"/>
             </Panzoom>
             <div class="marker" style="display: @(Helper.ProblemMarker.X == 0 ? "none" : "block");left:@Helper.ProblemMarker.X.ToString().Replace(',','.')%; top:@Helper.ProblemMarker.Y.ToString().Replace(',','.')%;"></div>
@@ -68,6 +68,17 @@
     height: 100%;
     background-color: #4e148c;
     overflow: hidden;
+    }
+
+    .img, .img-out {
+    transition: 0.3s ease-in-out;
+    margin-top:0%;
+    }
+    .img-out {
+    margin-top: 100%;
+    }
+    .img-in {
+    margin-top: -100%;
     }
 
     .page-bg {
@@ -158,46 +169,37 @@
 {
     private ElementReference imageContainer;
 
-    private string floor = "EG-Bitmap";
     private bool showFloors = false;
+    private string cssState = "img";
+
     private void ShowFloors()
     {
         showFloors = !showFloors;
     }
 
+    private Dictionary<string, string> mapPaths = new Dictionary<string, string>() {
+        { "Untergeschoss", "EU-Bitmap"},
+        { "Erdgeschoss", "EG-Bitmap" },
+        { "1. Stock", "E1-Bitmap" },
+        { "2. Stock", "E2-Bitmap" },
+        { "3. Stock", "E3-Bitmap" },
+        { "Dachgeschoss", "ED-Bitmap" },
+    };
+
     private string selectedFilter = "Erdgeschoss";
-    private void SelectFilter(string filter)
+    private async void SelectFilter(string filter)
     {
-        selectedFilter = filter;
-        floor = $"White_Rectangle{new Random().Next(1, 5)}";
-        switch (selectedFilter)
-        {
-            case "Untergeschoss":
-                Helper.SelectedMarkerFloor = -1;
-                floor = "EU-Bitmap";
-                break;
-            case "Erdgeschoss":
-                Helper.SelectedMarkerFloor = 0;
-                floor = "EG-Bitmap";
-                break;
-            case "1. Stock":
-                Helper.SelectedMarkerFloor = 1;
-                floor = "E1-Bitmap";
-                break;
-            case "2. Stock":
-                Helper.SelectedMarkerFloor = 2;
-                floor = "E2-Bitmap";
-                break;
-            case "3. Stock":
-                Helper.SelectedMarkerFloor = 3;
-                floor = "E3-Bitmap";
-                break;
-            case "Dachgeschoss":
-                Helper.SelectedMarkerFloor = 4;
-                floor = "ED-Bitmap";
-                break;
-        }
         ShowFloors();
+        if (selectedFilter == filter)
+            return; // no transition needed.
+        cssState = "img-out";
+        await Task.Delay(300);
+        cssState = "img-in";
+        StateHasChanged();
+        await Task.Delay(100);
+        selectedFilter = filter;
+        cssState = "img";
+        StateHasChanged();
     }
 
     private async Task AddMarker(MouseEventArgs e)
